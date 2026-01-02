@@ -1,0 +1,171 @@
+import csv
+import os
+from datetime import datetime
+from collections import defaultdict
+
+EXPENSE_FILE = "expenses.csv"
+
+
+# LOAD EXISTING EXPENSES
+def load_expenses():
+    expenses = []
+    if os.path.exists(EXPENSE_FILE):
+        with open(EXPENSE_FILE, mode="r", newline="", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                row["Amount"] = float(row["Amount"])
+                expenses.append(row)
+    return expenses
+
+
+# SAVE EXPENSES 
+def save_expenses(expenses):
+    with open(EXPENSE_FILE, mode="w", newline="", encoding="utf-8") as file:
+        fieldnames = ["Date", "Category", "Amount", "Description"]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(expenses)
+    print("\n💾 All expenses saved successfully!")
+
+
+# ADD NEW EXPENSE
+def add_expense(expenses):
+    print("\n➡ Add New Expense")
+
+    date_input = input("Enter date (YYYY-MM-DD) or press Enter for today: ")
+    if date_input == "":
+        date_input = datetime.today().strftime("%Y-%m-%d")
+
+    category = input("Enter category (Food/Travel/Bills/Other): ").title()
+
+    try:
+        amount = float(input("Enter amount (₹): "))
+    except ValueError:
+        print("❌ Invalid amount!")
+        return
+
+    description = input("Enter description (optional): ")
+
+    expense = {
+        "Date": date_input,
+        "Category": category,
+        "Amount": amount,
+        "Description": description
+    }
+
+    expenses.append(expense)
+    print("✅ Expense added successfully!")
+
+
+#  VIEW ALL EXPENSES 
+def view_all_expenses(expenses):
+    print("\n📋 All Expenses:")
+    if not expenses:
+        print("No expenses found.")
+        return
+
+    print("{:<12} {:<12} {:<10} {}".format("Date", "Category", "Amount", "Description"))
+    print("-" * 50)
+
+    for e in expenses:
+        print("{:<12} {:<12} ₹{:<10} {}".format(e["Date"], e["Category"], e["Amount"], e["Description"]))
+
+
+# FILTER BY CATEGORY 
+def view_by_category(expenses):
+    category = input("\nEnter category to filter: ").title()
+
+    filtered = [e for e in expenses if e["Category"] == category]
+
+    if not filtered:
+        print("❌ No expenses found for this category.")
+        return
+
+    print(f"\n📂 Expenses under category: {category}")
+    print("{:<12} {:<12} {:<10} {}".format("Date", "Category", "Amount", "Description"))
+    print("-" * 50)
+
+    for e in filtered:
+        print("{:<12} {:<12} ₹{:<10} {}".format(e["Date"], e["Category"], e["Amount"], e["Description"]))
+
+
+#  MONTHLY SUMMARY 
+def monthly_summary(expenses, monthly_budget):
+    month_input = input("\nEnter month (YYYY-MM): ")
+
+    total = 0
+    for e in expenses:
+        if e["Date"].startswith(month_input):
+            total += e["Amount"]
+
+    print(f"\n📅 Summary for {month_input}")
+    print(f"Total spent: ₹{total}")
+    print(f"Budget: ₹{monthly_budget}")
+
+    if total > monthly_budget:
+        print("⚠️ WARNING! You exceeded your monthly budget.")
+    else:
+        print("👍 You are within the budget.")
+
+
+#  CATEGORY SUMMARY 
+def category_summary(expenses):
+    summary = defaultdict(float)
+
+    for e in expenses:
+        summary[e["Category"]] += e["Amount"]
+
+    print("\n📊 Category-wise Summary:")
+    print("{:<15} {}".format("Category", "Total (₹)"))
+    print("-" * 30)
+
+    total_spent = 0
+
+    for cat, amt in summary.items():
+        print("{:<15} ₹{}".format(cat, amt))
+        total_spent += amt
+
+    print("-" * 30)
+    print(f"Overall Total Spent: ₹{total_spent}")
+
+
+# MAIN MENU 
+def main():
+    print("\n🧾 Welcome to Personal Expense Tracker 🧾")
+
+    monthly_budget = float(input("Enter your monthly budget (₹): "))
+
+    expenses = load_expenses()
+
+    while True:
+        print("""
+=== Expense Tracker Menu ===
+1. Add New Expense
+2. View All Expenses
+3. View Expenses by Category
+4. View Monthly Summary
+5. Show Full Expense Summary
+6. Save & Exit
+""")
+        choice = input("Select an option (1-6): ")
+
+        if choice == "1":
+            add_expense(expenses)
+        elif choice == "2":
+            view_all_expenses(expenses)
+        elif choice == "3":
+            view_by_category(expenses)
+        elif choice == "4":
+            monthly_summary(expenses, monthly_budget)
+        elif choice == "5":
+            category_summary(expenses)
+        elif choice == "6":
+            save_expenses(expenses)
+            print("👋 Thank you for using Expense Tracker!")
+            break
+        else:
+            print("❌ Invalid option. Try again!")
+
+
+
+main()
