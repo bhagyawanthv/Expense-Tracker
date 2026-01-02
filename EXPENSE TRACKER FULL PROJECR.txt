@@ -25,7 +25,7 @@ def save_expenses(expenses):
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(expenses)
-    print("\n💾 All expenses saved successfully!")
+    print("\n All expenses saved successfully!")
 
 
 # ADD NEW EXPENSE
@@ -41,7 +41,7 @@ def add_expense(expenses):
     try:
         amount = float(input("Enter amount (₹): "))
     except ValueError:
-        print("❌ Invalid amount!")
+        print(" Invalid amount!")
         return
 
     description = input("Enter description (optional): ")
@@ -54,12 +54,12 @@ def add_expense(expenses):
     }
 
     expenses.append(expense)
-    print("✅ Expense added successfully!")
+    print(" Expense added successfully!")
 
 
 #  VIEW ALL EXPENSES 
 def view_all_expenses(expenses):
-    print("\n📋 All Expenses:")
+    print("\n All Expenses:")
     if not expenses:
         print("No expenses found.")
         return
@@ -78,10 +78,10 @@ def view_by_category(expenses):
     filtered = [e for e in expenses if e["Category"] == category]
 
     if not filtered:
-        print("❌ No expenses found for this category.")
+        print(" No expenses found for this category.")
         return
 
-    print(f"\n📂 Expenses under category: {category}")
+    print(f"\n Expenses under category: {category}")
     print("{:<12} {:<12} {:<10} {}".format("Date", "Category", "Amount", "Description"))
     print("-" * 50)
 
@@ -98,14 +98,14 @@ def monthly_summary(expenses, monthly_budget):
         if e["Date"].startswith(month_input):
             total += e["Amount"]
 
-    print(f"\n📅 Summary for {month_input}")
+    print(f"\n Summary for {month_input}")
     print(f"Total spent: ₹{total}")
     print(f"Budget: ₹{monthly_budget}")
 
     if total > monthly_budget:
-        print("⚠️ WARNING! You exceeded your monthly budget.")
+        print(" WARNING! You exceeded your monthly budget.")
     else:
-        print("👍 You are within the budget.")
+        print(" You are within the budget.")
 
 
 #  CATEGORY SUMMARY 
@@ -115,7 +115,7 @@ def category_summary(expenses):
     for e in expenses:
         summary[e["Category"]] += e["Amount"]
 
-    print("\n📊 Category-wise Summary:")
+    print("\n Category-wise Summary:")
     print("{:<15} {}".format("Category", "Total (₹)"))
     print("-" * 30)
 
@@ -131,7 +131,7 @@ def category_summary(expenses):
 
 # MAIN MENU 
 def main():
-    print("\n🧾 Welcome to Personal Expense Tracker 🧾")
+    print("\n Welcome to Personal Expense Tracker 🧾")
 
     monthly_budget = float(input("Enter your monthly budget (₹): "))
 
@@ -161,11 +161,12 @@ def main():
             category_summary(expenses)
         elif choice == "6":
             save_expenses(expenses)
-            print("👋 Thank you for using Expense Tracker!")
+            print(" Thank you for using Expense Tracker!")
             break
         else:
-            print("❌ Invalid option. Try again!")
+            print(" Invalid option. Try again!")
 
 
 
 main()
+
